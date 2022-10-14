@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model Featured {
+    id     String     @id @default(cuid())
+    item   Game       @relation(fields: [gameId], references: [id])
+    gameId String
+    tab    FeatureTab
+}
+
+enum FeatureTab {
+    RECOMMENDED
+    NEWS
+    TOP
+    POPULAR
+    SPECIALS
+    FREE
+}
+
+model Game {
+    id    String @id @default(cuid())
+    name  String @unique
+    image String
+    price Float
+
+    tags     Tag[]
+    Featured Featured[]
+}
+
+model Tag {
+    id     String  @id @default(cuid())
+    Game   Game?   @relation(fields: [gameId], references: [id])
+    gameId String?
+}
